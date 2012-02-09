@@ -1,0 +1,64 @@
+#!/bin/bash
+#########################################################################
+# Copyright (C) 2012  Wojciech Siewierski                               #
+#                                                                       #
+# This program is free software: you can redistribute it and/or modify  #
+# it under the terms of the GNU General Public License as published by  #
+# the Free Software Foundation, either version 3 of the License, or     #
+# (at your option) any later version.                                   #
+#                                                                       #
+# This program is distributed in the hope that it will be useful,       #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of        #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
+# GNU General Public License for more details.                          #
+#                                                                       #
+# You should have received a copy of the GNU General Public License     #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>. #
+#########################################################################
+
+if ! command -v pmount &> /dev/null; then
+    echo "Missing dependency: pmount" 1>&2
+    exit 4
+fi
+
+if [ $# != 1 -o "$1" = "-h" ]; then
+    echo "Usage: amount sdXY
+       amount /dev/sdXY" 1>&2
+    exit
+fi
+
+if [[ ! "$1" =~ '/' ]]; then
+    DEV="/dev/$1"
+else
+    DEV="$1"
+fi
+
+BOLD=`tput bold`
+RED=`tput setaf 1`
+GREEN=`tput setaf 2`
+YELLOW=`tput setaf 3`
+RESET=`tput sgr0`
+
+if [ ! -b "$DEV" ]; then
+    echo "$BOLD$RED*$RESET $BOLD$DEV$RESET is not a block device" 1>&2
+    exit 3
+fi
+
+pmount "$DEV" 2> /dev/null
+if [ $? = 0 ]; then
+    echo "$BOLD$GREEN*$RESET $BOLD$DEV$RESET mounted"
+    cd ${DEV/\/dev\//\/media\/} # /dev/sda1 -> /media/sda1 etc.
+    AMOUNT_DEVICE=$DEV $SHELL
+    echo "$BOLD$YELLOW*$RESET Unmounting $BOLD$DEV$RESET..."
+    cd $OLDPWD
+    pumount "$DEV" 2> /dev/null
+    if [ $? = 0 ]; then
+        echo "$BOLD$GREEN*$RESET $BOLD$DEV$RESET unmounted"
+    else
+        echo "$BOLD$RED*$RESET Cannot unmount $BOLD$DEV$RESET"
+        exit 2
+    fi
+else
+    echo "$BOLD$RED*$RESET Cannot mount $BOLD$DEV$RESET"
+    exit 1
+fi
