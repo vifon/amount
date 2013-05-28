@@ -1,6 +1,6 @@
 #!/bin/bash
 #########################################################################
-# Copyright (C) 2012  Wojciech Siewierski                               #
+# Copyright (C) 2012-2013  Wojciech Siewierski                          #
 #                                                                       #
 # This program is free software: you can redistribute it and/or modify  #
 # it under the terms of the GNU General Public License as published by  #
@@ -45,10 +45,24 @@ if [ ! -b "$DEV" ]; then
 fi
 
 pmount "$DEV" 2> /dev/null
-if [ $? = 0 ]; then
+EXITCODE=$?
+
+finish()
+{
+    kill $PID
+    wait $PID
+    cd /
+    pumount "$DEV" 2> /dev/null
+    exit
+}
+trap finish INT TERM HUP
+
+if [ $EXITCODE = 0 ]; then
     echo "$BOLD$GREEN*$RESET $BOLD$DEV$RESET mounted"
     cd ${DEV/\/dev\//\/media\/} # /dev/sda1 -> /media/sda1 etc.
-    AMOUNT_DEVICE=$DEV $SHELL
+    AMOUNT_DEVICE=$DEV $SHELL <&0 &
+    PID=$!
+    wait $PID
     echo "$BOLD$YELLOW*$RESET Unmounting $BOLD$DEV$RESET..."
     cd $OLDPWD
     pumount "$DEV" 2> /dev/null

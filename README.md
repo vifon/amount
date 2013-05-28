@@ -19,10 +19,6 @@ When user mounts a device, a new subshell is started. The device is unmounted
 when the subshell is closed. User can check which device is bound to the current
 subshell using AMOUNT_DEVICE environmental variable.
 
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**It will not work if user just closes the terminal emulator! Use Ctrl-D or 'exit'!**
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
 EXAMPLE
 -------
 
