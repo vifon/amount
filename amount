@@ -63,8 +63,8 @@ fi
 MOUNTNAME="${DEV##*/}"
 
 if [ -e "$HOME/.amount_map" ]; then
-    if command -v blkid &> /dev/null; then
-        UUID=$(blkid "$DEV" -s UUID -o value)
+    if command -v lsblk &> /dev/null; then
+        UUID=$(lsblk "$DEV" -o UUID | tail -n1)
         map-uuid-to-mount()
         {
             local MAPPING
