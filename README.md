@@ -45,6 +45,19 @@ DEPENDENCIES
 
 pmount, bash
 
+CONFIGURATION
+=============
+
+You can keep custom mountpoints (still located in /media) for some specific
+devices in $HOME/.amount_map in a following format:
+
+    UUID ~ mountpoint
+
+For example:
+
+    817A-7D6F ~ my-pendrive
+    41f08774-91e5-41e0-b1d9-4c217cb88729 ~ encrypted-usb
+
 AUTHOR
 ======
 
@@ -53,7 +66,7 @@ Wojciech 'vifon' Siewierski < wojciech dot siewierski at gmail dot com >
 COPYRIGHT
 =========
 
-Copyright (C) 2012  Wojciech Siewierski
+Copyright (C) 2012-2013  Wojciech Siewierski
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

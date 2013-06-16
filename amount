@@ -44,7 +44,26 @@ if [ ! -b "$DEV" ]; then
     exit 3
 fi
 
-pmount "$DEV" 2> /dev/null
+MOUNTNAME="${DEV##*/}"
+
+if [ -e "$HOME/.amount_map" ]; then
+    if command -v blkid &> /dev/null; then
+        UUID=$(blkid "$DEV" -s UUID -o value)
+        map-uuid-to-mount()
+        {
+            local MAPPING
+            MAPPING=$(grep "^$1 ~" "$HOME/.amount_map")
+            if [ $? = 0 ]; then
+                echo "${MAPPING##* ~ }"
+            else
+                echo "$MOUNTNAME"
+            fi
+        }
+        MOUNTNAME=$(map-uuid-to-mount "$UUID")
+    fi
+fi
+
+pmount "$DEV" "$MOUNTNAME" 2> /dev/null
 EXITCODE=$?
 
 finish()
@@ -59,7 +78,7 @@ trap finish INT TERM HUP
 
 if [ $EXITCODE = 0 ]; then
     echo "$BOLD$GREEN*$RESET $BOLD$DEV$RESET mounted"
-    cd ${DEV/\/dev\//\/media\/} # /dev/sda1 -> /media/sda1 etc.
+    cd "/media/$MOUNTNAME"
     AMOUNT_DEVICE=$DEV $SHELL <&0 &
     PID=$!
     wait $PID
