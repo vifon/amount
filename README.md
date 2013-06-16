@@ -6,9 +6,9 @@ amount - auto mount
 SYNOPSIS
 ========
 
-    amount sdb1         (mount /dev/sdb1)
-    amount /dev/sdb1    (the same)
-    amount -h           (help)
+    amount [-n] sdb1         (mount /dev/sdb1)
+    amount [-n] /dev/sdb1    (the same)
+    amount -h                (help)
 
 DESCRIPTION
 ===========
@@ -34,6 +34,13 @@ EXAMPLE
     $ echo $AMOUNT_DEVICE
 
     $
+
+OPTIONS
+=======
+
+* -n
+
+    do not change directory
 
 INSTALLATION
 ============

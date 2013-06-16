@@ -21,11 +21,27 @@ if ! command -v pmount &> /dev/null; then
     exit 4
 fi
 
-if [ $# != 1 -o "$1" = "-h" ]; then
-    echo "Usage: amount sdXY
-       amount /dev/sdXY" 1>&2
-    exit
-fi
+while getopts "hn" ARG; do
+    case "$ARG" in
+        h)
+            echo "\
+Usage: amount [-n] sdXY
+       amount [-n] /dev/sdXY
+
+Options:
+  -n            do not change directory" 1>&2
+            exit
+            ;;
+        n)
+            NOCD=1
+            ;;
+        ?)
+            echo "Unknown option: $ARG" 1>&2
+            exit 5
+            ;;
+    esac
+done
+shift $[$OPTIND-1]
 
 if [[ ! "$1" =~ '/' ]]; then
     DEV="/dev/$1"
@@ -78,12 +94,16 @@ trap finish INT TERM HUP
 
 if [ $EXITCODE = 0 ]; then
     echo "$BOLD$GREEN*$RESET $BOLD$DEV$RESET mounted"
-    cd "/media/$MOUNTNAME"
+    if [ -z "$NOCD" ]; then
+        cd "/media/$MOUNTNAME"
+    fi
     AMOUNT_DEVICE=$DEV $SHELL <&0 &
     PID=$!
     wait $PID
     echo "$BOLD$YELLOW*$RESET Unmounting $BOLD$DEV$RESET..."
-    cd $OLDPWD
+    if [ -z "$NOCD" ]; then
+        cd $OLDPWD
+    fi
     pumount "$DEV" 2> /dev/null
     if [ $? = 0 ]; then
         echo "$BOLD$GREEN*$RESET $BOLD$DEV$RESET unmounted"
