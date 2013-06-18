@@ -36,7 +36,6 @@ Options:
             NOCD=1
             ;;
         ?)
-            echo "Unknown option: $ARG" 1>&2
             exit 5
             ;;
     esac
