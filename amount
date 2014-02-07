@@ -29,7 +29,7 @@ Usage: amount [-n] sdXY
        amount [-n] /dev/sdXY
 
 Options:
-  -n            do not change directory" 1>&2
+  -n            do not change directory"
             exit
             ;;
         n)
@@ -78,7 +78,7 @@ if [ -e "$HOME/.amount_map" ]; then
     fi
 fi
 
-pmount "$DEV" "$MOUNTNAME" 2> /dev/null
+pmount "$DEV" "$MOUNTNAME"
 EXITCODE=$?
 
 finish()
@@ -86,8 +86,8 @@ finish()
     kill $PID
     wait $PID
     cd /
-    pumount "$DEV" 2> /dev/null
-    exit
+    pumount "$DEV"
+    exit $?
 }
 trap finish INT TERM HUP
 
@@ -109,7 +109,7 @@ if [ $EXITCODE = 0 ]; then
     if [ -z "$NOCD" ]; then
         cd $OLDPWD
     fi
-    pumount "$DEV" 2> /dev/null
+    pumount "$DEV"
     if [ $? = 0 ]; then
         echo "$BOLD$GREEN*$RESET $BOLD$DEV$RESET unmounted"
     else
