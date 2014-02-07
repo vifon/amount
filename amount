@@ -78,9 +78,13 @@ if [ -e "$HOME/.amount_map" ]; then
     fi
 fi
 
-pmount "$DEV" "$MOUNTNAME"
-EXITCODE=$?
+if ! pmount "$DEV" "$MOUNTNAME"; then
+    echo "$BOLD$RED*$RESET Cannot mount $BOLD$DEV$RESET"
+    exit 1
+fi
+echo "$BOLD$GREEN*$RESET $BOLD$DEV$RESET mounted"
 
+# cleanup in case the terminal is closed before the shell bound to the mount
 finish()
 {
     kill $PID
@@ -91,32 +95,23 @@ finish()
 }
 trap finish INT TERM HUP
 
-if [ $EXITCODE = 0 ]; then
-    echo "$BOLD$GREEN*$RESET $BOLD$DEV$RESET mounted"
-    if [ -z "$NOCD" ]; then
-        cd "/media/$MOUNTNAME"
-    fi
 
-    # We run the new shell in background so we can retrieve its PID
-    # for the possible cleanup later.  The current stdin is redirected
-    # to it and we call wait then so it behaves as if it was run in
-    # foreground.
-    AMOUNT_DEVICE=$DEV $SHELL <&0 &
-    PID=$!
-    wait $PID
+[ -z "$NOCD" ] && cd "/media/$MOUNTNAME"
 
-    echo "$BOLD$YELLOW*$RESET Unmounting $BOLD$DEV$RESET..."
-    if [ -z "$NOCD" ]; then
-        cd $OLDPWD
-    fi
-    pumount "$DEV"
-    if [ $? = 0 ]; then
-        echo "$BOLD$GREEN*$RESET $BOLD$DEV$RESET unmounted"
-    else
-        echo "$BOLD$RED*$RESET Cannot unmount $BOLD$DEV$RESET"
-        exit 2
-    fi
+# We run the new shell in background so we can retrieve its PID
+# for the possible cleanup later.  The current stdin is redirected
+# to it and we call wait then so it behaves as if it was run in
+# foreground.
+AMOUNT_DEVICE=$DEV $SHELL <&0 &
+PID=$!
+wait $PID
+
+[ -z "$NOCD" ] && cd $OLDPWD
+
+echo "$BOLD$YELLOW*$RESET Unmounting $BOLD$DEV$RESET..."
+if pumount "$DEV"; then
+    echo "$BOLD$GREEN*$RESET $BOLD$DEV$RESET unmounted"
 else
-    echo "$BOLD$RED*$RESET Cannot mount $BOLD$DEV$RESET"
-    exit 1
+    echo "$BOLD$RED*$RESET Cannot unmount $BOLD$DEV$RESET"
+    exit 2
 fi
