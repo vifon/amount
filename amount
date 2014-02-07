@@ -96,9 +96,15 @@ if [ $EXITCODE = 0 ]; then
     if [ -z "$NOCD" ]; then
         cd "/media/$MOUNTNAME"
     fi
+
+    # We run the new shell in background so we can retrieve its PID
+    # for the possible cleanup later.  The current stdin is redirected
+    # to it and we call wait then so it behaves as if it was run in
+    # foreground.
     AMOUNT_DEVICE=$DEV $SHELL <&0 &
     PID=$!
     wait $PID
+
     echo "$BOLD$YELLOW*$RESET Unmounting $BOLD$DEV$RESET..."
     if [ -z "$NOCD" ]; then
         cd $OLDPWD
