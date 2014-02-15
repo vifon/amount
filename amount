@@ -76,7 +76,7 @@ if [ -e "$HOME/.amount_map" ]; then
         }
         MOUNTNAME=$(map-uuid-to-mount "$UUID")
     else
-        echo "$BOLD$YELLOW*$RESET ${BOLD}Warning:$RESET `lsblk' not found, custom mount point disabled" 1>&2
+        echo "$BOLD$YELLOW*$RESET ${BOLD}Warning:$RESET \`lsblk' not found, custom mount point disabled" 1>&2
     fi
 fi
 
