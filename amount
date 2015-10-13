@@ -21,7 +21,9 @@ if ! command -v pmount &> /dev/null; then
     exit 4
 fi
 
-while getopts "hn" ARG; do
+COMMAND=$SHELL
+
+while getopts "hnc:" ARG; do
     case "$ARG" in
         h)
             echo "\
@@ -34,6 +36,9 @@ Options:
             ;;
         n)
             NOCD=1
+            ;;
+        c)
+            COMMAND=$OPTARG
             ;;
         ?)
             exit 5
@@ -104,7 +109,7 @@ trap finish INT TERM HUP
 # for the possible cleanup later.  The current stdin is redirected
 # to it and we call wait then so it behaves as if it was run in
 # foreground.
-AMOUNT_DEVICE=$DEV $SHELL <&0 &
+AMOUNT_DEVICE=$DEV $COMMAND <&0 &
 PID=$!
 wait $PID
 
