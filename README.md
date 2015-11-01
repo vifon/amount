@@ -6,9 +6,8 @@ amount - auto mount
 SYNOPSIS
 ========
 
-    amount [-n] sdb1         (mount /dev/sdb1)
-    amount [-n] /dev/sdb1    (the same)
-    amount -h                (help)
+    amount [OPTIONS] sdb1         (mount /dev/sdb1)
+    amount [OPTIONS] /dev/sdb1    (the same)
 
 DESCRIPTION
 ===========
@@ -38,9 +37,18 @@ EXAMPLE
 OPTIONS
 =======
 
+* -h
+
+    show help
+
 * -n
 
     do not change directory
+
+* -c <COMMAND>
+
+    after mounting the volume run the specified command instead of the
+    shell and then unmount the volume
 
 INSTALLATION
 ============
