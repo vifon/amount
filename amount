@@ -45,19 +45,19 @@ Options:
             ;;
     esac
 done
-shift $[$OPTIND-1]
+shift $((OPTIND-1))
 
-if [[ ! "$1" =~ '/' ]]; then
+if [[ ! "$1" = */* ]]; then
     DEV="/dev/$1"
 else
     DEV="$1"
 fi
 
-BOLD=`tput bold`
-RED=`tput setaf 1`
-GREEN=`tput setaf 2`
-YELLOW=`tput setaf 3`
-RESET=`tput sgr0`
+BOLD=$(tput bold)
+RED=$(tput setaf 1)
+GREEN=$(tput setaf 2)
+YELLOW=$(tput setaf 3)
+RESET=$(tput sgr0)
 
 if [ ! -b "$DEV" ]; then
     echo "$BOLD$RED*$RESET $BOLD$DEV$RESET is not a block device" 1>&2
@@ -94,8 +94,8 @@ echo "$BOLD$GREEN*$RESET $BOLD$DEV$RESET mounted"
 # cleanup in case the terminal is closed before the shell bound to the mount
 finish()
 {
-    kill $PID
-    wait $PID
+    kill "$PID"
+    wait "$PID"
     cd /
     pumount "$DEV"
     exit $?
@@ -113,7 +113,7 @@ AMOUNT_DEVICE=$DEV $COMMAND <&0 &
 PID=$!
 wait $PID
 
-[ -z "$NOCD" ] && cd $OLDPWD
+[ -z "$NOCD" ] && cd "$OLDPWD"
 
 echo "$BOLD$YELLOW*$RESET Unmounting $BOLD$DEV$RESET..."
 if pumount "$DEV"; then
