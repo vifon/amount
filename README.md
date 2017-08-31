@@ -63,15 +63,8 @@ pmount, bash
 CONFIGURATION
 =============
 
-You can keep custom mountpoints (still located in /media) for some specific
-devices in $HOME/.amount_map in a following format:
-
-    UUID ~ mountpoint
-
-For example:
-
-    817A-7D6F ~ my-pendrive
-    41f08774-91e5-41e0-b1d9-4c217cb88729 ~ encrypted-usb
+_amount_ will use the device label as the mountpoint name if the label
+is present. You can use it get consistent/persistent paths.
 
 AUTHOR
 ======

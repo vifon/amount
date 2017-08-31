@@ -64,25 +64,11 @@ if [ ! -b "$DEV" ]; then
     exit 3
 fi
 
-MOUNTNAME="${DEV##*/}"
-
-if [ -e "$HOME/.amount_map" ]; then
-    if command -v lsblk &> /dev/null; then
-        UUID=$(lsblk "$DEV" -o UUID | tail -n1)
-        map-uuid-to-mount()
-        {
-            local MAPPING
-            MAPPING=$(grep "^$1 ~" "$HOME/.amount_map")
-            if [ $? = 0 ]; then
-                echo "${MAPPING##* ~ }"
-            else
-                echo "$MOUNTNAME"
-            fi
-        }
-        MOUNTNAME=$(map-uuid-to-mount "$UUID")
-    else
-        echo "$BOLD$YELLOW*$RESET ${BOLD}Warning:$RESET \`lsblk' not found, custom mount point disabled" 1>&2
-    fi
+DEVLABEL=$(blkid -s LABEL -o value "$DEV")
+if [ -n "$DEVLABEL" ]; then
+    MOUNTNAME=$DEVLABEL
+else
+    MOUNTNAME="${DEV##*/}"
 fi
 
 if ! pmount "$DEV" "$MOUNTNAME"; then
