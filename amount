@@ -96,7 +96,7 @@ while true; do
     # for the possible cleanup later.  The current stdin is redirected
     # to it and we call wait then so it behaves as if it was run in
     # foreground.
-    AMOUNT_DEVICE=$DEV $COMMAND <&0 &
+    AMOUNT_DEVICE="${AMOUNT_DEVICE+$AMOUNT_DEVICE }$DEV" $COMMAND <&0 &
     PID=$!
     wait $PID
 
