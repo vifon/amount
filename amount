@@ -91,20 +91,22 @@ trap finish INT TERM HUP
 
 [ -z "$NOCD" ] && cd "/media/$MOUNTNAME"
 
-# We run the new shell in background so we can retrieve its PID
-# for the possible cleanup later.  The current stdin is redirected
-# to it and we call wait then so it behaves as if it was run in
-# foreground.
-AMOUNT_DEVICE=$DEV $COMMAND <&0 &
-PID=$!
-wait $PID
+while true; do
+    # We run the new shell in background so we can retrieve its PID
+    # for the possible cleanup later.  The current stdin is redirected
+    # to it and we call wait then so it behaves as if it was run in
+    # foreground.
+    AMOUNT_DEVICE=$DEV $COMMAND <&0 &
+    PID=$!
+    wait $PID
 
-[ -z "$NOCD" ] && cd "$OLDPWD"
+    [ -z "$NOCD" ] && cd "$OLDPWD"
 
-echo "$BOLD$YELLOW*$RESET Unmounting $BOLD$DEV$RESET..."
-if pumount "$DEV"; then
-    echo "$BOLD$GREEN*$RESET $BOLD$DEV$RESET unmounted"
-else
-    echo "$BOLD$RED*$RESET Cannot unmount $BOLD$DEV$RESET"
-    exit 2
-fi
+    echo "$BOLD$YELLOW*$RESET Unmounting $BOLD$DEV$RESET..."
+    if pumount "$DEV"; then
+        echo "$BOLD$GREEN*$RESET $BOLD$DEV$RESET unmounted"
+        break
+    else
+        echo "$BOLD$RED*$RESET Cannot unmount $BOLD$DEV$RESET"
+    fi
+done
